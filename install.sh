@@ -1,9 +1,12 @@
-#!/bin/bash
+# remove dir env
+if [ -d "$env_dir" ]
+then
+    rm -r .env/
+fi
 
 sudo apt-get update
 sudo apt-get -y install python-pip
 sudo pip install virtualenv
-virtualenv -p python .envPC && . .envPC/bin/activate
+virtualenv -p python .env && . .env/bin/activate
 
-pip install -r requirements.txt
-
+.env/bin/pip install -r requirements.txt
