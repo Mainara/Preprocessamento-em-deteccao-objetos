@@ -6,6 +6,9 @@ import argparse
 
 # pacote utilizado para auxiliar a manipulacao de imagemns
 import cv2
+
+
+import os
  
 class DetectorObjetos:
 
@@ -15,7 +18,7 @@ class DetectorObjetos:
     def getArgs(self):
         global args
         argp = argparse.ArgumentParser()
-        argp.add_argument("-i", "--imagem", required=True, help="caminho para a imagemm de entrada")
+        argp.add_argument("-i", "--imagens", required=True, help="caminho para as imagens de entrada")
         argp.add_argument("-p", "--prototxt", required=True, help="caminho para Caffe 'deploy' prototxt file")
         argp.add_argument("-m", "--model", required=True, help="caminho para o modelo Caffe pre-treinado")
         argp.add_argument("-c", "--confidence", type=float, default=0.2, help="probabilidade minima para filtrar deteccoes fracas")
@@ -27,24 +30,29 @@ class DetectorObjetos:
         global args
         print("[INFO] carregando modelo...")
         net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
-        return net
+        self.carregaImagens(net)
 
     # carrega a imagem de entrada e constroi um blob de entrada para a imagem
     # redimencionando a mesma para 300x300 pixels e fazendo a normalizacao
     # (info: a normalizacao eh feita pelo as autores que implementaram o MobileNet SSD)
-    def carregaImagem(self):
+    def carregaImagens(self, net):
         global args
-        imagem = cv2.imread(args["imagem"])
-        (h, w) = imagem.shape[:2]
-        blob = cv2.dnn.blobFromImage(cv2.resize(imagem, (300, 300)), 0.007843, (300, 300), 127.5)
-        return {'imagem':imagem, 'blob':blob, 'w': w, 'h':h}
+        caminho_imagens = args["imagens"]
+        imagens = os.listdir(caminho_imagens)
+        for img in imagens:
+            imagem = cv2.imread(caminho_imagens +img)
+            (h, w) = imagem.shape[:2]
+            blob = cv2.dnn.blobFromImage(cv2.resize(imagem, (300, 300)), 0.007843, (300, 300), 127.5)
+            self.getDeteccoes(net, blob, w, h, imagem)
+        
 
     # passa o blob pela redes neurais e obtem as deteccoes e predicoes
-    def getDeteccoes(self, net, blob):
+    def getDeteccoes(self, net, blob, w, h, imagem):
         print("[INFO] calculando as deteccoes...")
         net.setInput(blob)
         deteccoes = net.forward()
-        return deteccoes
+        self.loopSobreDeteccoes(deteccoes, imagem, w, h)
+        
 
     # loop sobre as detccoes
     def loopSobreDeteccoes(self, deteccoes, imagem, w, h):
@@ -77,7 +85,7 @@ class DetectorObjetos:
 		        y = comecoY - 15 if comecoY - 15 > 15 else comecoY + 15
 		        cv2.putText(imagem, label, (comecoX, y),
 			        cv2.FONT_HERSHEY_SIMPLEX, 0.5, CORES[idx], 2)
-        return imagem
+        self.mostraImagem(imagem)
 
     # mostra a imagem de saida
     def mostraImagem(self, imagem):
@@ -87,12 +95,5 @@ class DetectorObjetos:
 if __name__ == "__main__":
     od = DetectorObjetos()
     od.getArgs()
-    net = od.carregaModelo()
-    dic = od.carregaImagem()
-    imagem = dic['imagem']
-    blob = dic['blob']
-    w = dic['w']
-    h = dic['h']
-    deteccoes = od.getDeteccoes(net, blob)
-    imagem2 = od.loopSobreDeteccoes(deteccoes, imagem, w, h)
-    od.mostraImagem(imagem2)
+    od.carregaModelo()
+    
