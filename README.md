@@ -15,7 +15,7 @@ O script install.sh irá instalar as dependências dentro de um ambiente virtual
 ```
 
 Para realizar a detecção é necessário alguns argumentos:
-* --imagem: caminho da imagem de entrada
+* --imagens: caminho da pasta de imagens de entrada
 * --prototxt: caminho para Caffe 'deploy' prototxt file
 * --model: caminho para o modelo Caffe pre-treinado
 * --confidence (opcional): probabilidade minima para filtrar deteccoes fracas
@@ -23,6 +23,6 @@ Para realizar a detecção é necessário alguns argumentos:
 Exemplo de execução:
 
 ```sh
-python object-detection.py --prototxt MobileNetSSD_deploy.prototxt.txt --model MobileNetSSD_deploy.caffemodel --imagem imagens/example_01.jpg
+python object-detection.py --prototxt MobileNetSSD_deploy.prototxt.txt --model MobileNetSSD_deploy.caffemodel --imagem imagens/motorbike/000051.jpg
 ```
 
