@@ -66,9 +66,8 @@ class Preprocessamentos:
     
 if __name__ == "__main__":
     pp = Preprocessamentos()
-    img = cv2.imread("imagens/chair/000005.jpg", 0)
+    img = cv2.imread("imagens/chair/000147.jpg", 0)
     cv2.imshow("Original", img)
-
     '''
     img_dilatada = pp.dilatacao(img, "cross")
     cv2.imshow("Dilatacao", img_dilatada)
@@ -91,3 +90,4 @@ if __name__ == "__main__":
     '''
     cv2.imshow("kjb", pp.deteccaoBordas(img))
     cv2.waitKey(0)
+    cv2.imwrite("k.jpg", pp.deteccaoBordas(img))

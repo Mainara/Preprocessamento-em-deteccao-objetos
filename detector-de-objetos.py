@@ -12,8 +12,13 @@ import os
  
 class DetectorObjetos:
 
-    args = None
+    def __init__(self):
+        self.args = None
+        self.tipo_objeto = ""
+        self.y_pred = []
+        self.y_true = []
 
+    
     # construcao dos argumentos necessarios para executar a deteccao
     def getArgs(self):
         global args
@@ -37,14 +42,18 @@ class DetectorObjetos:
     # (info: a normalizacao eh feita pelo as autores que implementaram o MobileNet SSD)
     def carregaImagens(self, net):
         global args
+        global tipo_objeto
         caminho_imagens = args["imagens"]
         imagens = os.listdir(caminho_imagens)
         for img in imagens:
             imagem = cv2.imread(caminho_imagens +img)
+            lista = (caminho_imagens+img).split("/")
+            tipo_objeto = lista[1][0:len(lista[1])-1]
+            self.y_true.append(int(lista[2].split("_")[1][0]))
             (h, w) = imagem.shape[:2]
             blob = cv2.dnn.blobFromImage(cv2.resize(imagem, (300, 300)), 0.007843, (300, 300), 127.5)
             self.getDeteccoes(net, blob, w, h, imagem)
-        
+                
 
     # passa o blob pela redes neurais e obtem as deteccoes e predicoes
     def getDeteccoes(self, net, blob, w, h, imagem):
@@ -64,6 +73,8 @@ class DetectorObjetos:
 	    "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
 	    "sofa", "train", "tvmonitor"]
         CORES = np.random.uniform(0, 255, size=(len(CLASSES), 3))
+
+        cont = 0
 
         for i in np.arange(0, deteccoes.shape[2]):
 	        # extrai a probabilidade associada com a predicao
@@ -85,15 +96,26 @@ class DetectorObjetos:
 		        y = comecoY - 15 if comecoY - 15 > 15 else comecoY + 15
 		        cv2.putText(imagem, label, (comecoX, y),
 			        cv2.FONT_HERSHEY_SIMPLEX, 0.5, CORES[idx], 2)
+                if CLASSES[idx] == tipo_objeto:
+                    cont += 1
+        self.y_pred.append(cont)
         self.mostraImagem(imagem)
+
+    def getY_pred(self):
+        return self.y_pred
+    
+    def getY_true(self):
+        return self.y_true
 
     # mostra a imagem de saida
     def mostraImagem(self, imagem):
         cv2.imshow("Output", imagem)
         cv2.waitKey(0)
 
+
 if __name__ == "__main__":
     od = DetectorObjetos()
     od.getArgs()
     od.carregaModelo()
-    
+    print od.getY_true()
+    print od.getY_pred()
