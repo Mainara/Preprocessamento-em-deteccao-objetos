@@ -23,6 +23,6 @@ Para realizar a detecção é necessário alguns argumentos:
 Exemplo de execução:
 
 ```sh
-python object-detection.py --prototxt MobileNetSSD_deploy.prototxt.txt --model MobileNetSSD_deploy.caffemodel --imagem imagens/motorbike/000051.jpg
+python detector-de-objetos.py --prototxt MobileNetSSD_deploy.prototxt.txt --model MobileNetSSD_deploy.caffemodel --imagens imagens/person_/
 ```
 
