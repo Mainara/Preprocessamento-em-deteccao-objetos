@@ -7,6 +7,7 @@ import argparse
 # pacote utilizado para auxiliar a manipulacao de imagemns
 import cv2
 
+from sklearn.metrics import accuracy_score, f1_score
 
 import os
  
@@ -112,10 +113,15 @@ class DetectorObjetos:
         cv2.imshow("Output", imagem)
         cv2.waitKey(0)
 
+    def calculaAcuracia(self):
+        return accuracy_score(self.y_true, self.y_pred)
+
+    def calculaF1Score(self):
+        return f1_score(self.y_true, self.y_pred, average='macro')  
 
 if __name__ == "__main__":
     od = DetectorObjetos()
     od.getArgs()
     od.carregaModelo()
-    print od.getY_true()
-    print od.getY_pred()
+    print od.calculaAcuracia()
+    print od.calculaF1Score()
