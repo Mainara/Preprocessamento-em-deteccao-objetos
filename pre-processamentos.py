@@ -1,15 +1,13 @@
 # pacote utilizado para auxiliar a manipulacao de imagemns
 import cv2
-
 import numpy as np
-
+import os
 from skimage.morphology import erosion, dilation, opening, closing, white_tophat
 from skimage.morphology import disk
 from scipy import ndimage, misc, signal
 from skimage.morphology import watershed
 from skimage.feature import peak_local_max
 from skimage import morphology
-
 from skimage.measure import label
 from skimage.morphology import closing
 from skimage.feature import canny
@@ -23,20 +21,32 @@ class Preprocessamentos:
         img = misc.imread(caminho)/255.
         filtro_agucamento = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
         img_com_filtro = np.ones(img.shape)
+        classe = caminho.split("/")[1]
+        nome_img = caminho.split("/")[2]
         for i in range(3):
             img_com_filtro[...,i] = np.clip(signal.convolve2d(img[...,i], filtro_agucamento, mode='same', boundary='symm'), 0,1)
-        misc.imsave("img.jpg", img_com_filtro)
+        if not os.path.exists("preprocessamento/agucamento/" + classe ):
+			os.makedirs("preprocessamento/agucamento/" + classe)
+        misc.imsave("preprocessamento/agucamento/"+ classe + "/" + nome_img , img_com_filtro)
     
-    def equalizaHist(self, img):
+    def equalizaHist(self, caminho):
+        img = cv2.imread(caminho, 0)
         equ = cv2.equalizeHist(img)
-        return equ
+        classe = caminho.split("/")[1]
+        nome_img = caminho.split("/")[2]
+        if not os.path.exists("preprocessamento/hist_equ/"+classe):
+			os.makedirs("preprocessamento/hist_equ/"+classe)
+        cv2.imwrite("preprocessamento/hist_equ/"+ classe + "/" + nome_img, equ)
 
-    def equalizaHistAdaptativo(self, img):
+    def equalizaHistAdaptativo(self, caminho):
+        img = cv2.imread(caminho, 0)
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
         cl1 = clahe.apply(img)
-        return cl1
-
-
+        classe = caminho.split("/")[1]
+        nome_img = caminho.split("/")[2]
+        if not os.path.exists("preprocessamento/hist_equ_adp/" + classe):
+			os.makedirs("preprocessamento/hist_equ_adp/" + classe)
+        cv2.imwrite("preprocessamento/hist_equ_adp/"+ classe + "/" + nome_img, cl1)
 
     # piora imagem
     def dilatacao(self, img, tipo_kernel):
@@ -102,5 +112,14 @@ class Preprocessamentos:
     
 if __name__ == "__main__":
     pp = Preprocessamentos()
-    pp.agucamentoBordas("imagens/chair_/000005_5.jpg")
+    imagens = os.listdir("imagens")
+    for classe in imagens:
+        caminho_classe = "imagens/"+classe
+        imgs = os.listdir(caminho_classe)
+        for img in imgs:
+            caminho_img = caminho_classe + "/" + img
+            print caminho_img
+            pp.agucamentoBordas(caminho_img)
+            pp.equalizaHist(caminho_img)
+            pp.equalizaHistAdaptativo(caminho_img)
     
