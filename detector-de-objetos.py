@@ -81,7 +81,7 @@ class DetectorObjetos:
 	        # extrai a probabilidade associada com a predicao
 	        confidence = deteccoes[0, 0, i, 2]
  
-            # filtra as deteccoes fracas de acordo com o calor de `confidence`
+            # filtra as deteccoes fracas de acordo com o valor de `confidence`
 	        if confidence > args["confidence"]:
 		        # extrai o indice da classe com determinado label em `deteccoes`,
 		        # e calcula as coordenadas (x, y) do bound box criado para o objeto
@@ -117,7 +117,7 @@ class DetectorObjetos:
         return accuracy_score(self.y_true, self.y_pred)
 
     def calculaF1Score(self):
-        return f1_score(self.y_true, self.y_pred, average='macro')  
+        return f1_score(self.y_true, self.y_pred, average='weighted')  
 
 if __name__ == "__main__":
     od = DetectorObjetos()

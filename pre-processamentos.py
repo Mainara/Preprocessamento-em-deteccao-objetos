@@ -5,7 +5,7 @@ import numpy as np
 
 from skimage.morphology import erosion, dilation, opening, closing, white_tophat
 from skimage.morphology import disk
-from scipy import ndimage
+from scipy import ndimage, misc, signal
 from skimage.morphology import watershed
 from skimage.feature import peak_local_max
 from skimage import morphology
@@ -17,6 +17,28 @@ from skimage.feature import canny
 
 class Preprocessamentos:
 
+    # mehora imagem
+
+    def agucamentoBordas(self, caminho):
+        img = misc.imread(caminho)/255.
+        filtro_agucamento = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
+        img_com_filtro = np.ones(img.shape)
+        for i in range(3):
+            img_com_filtro[...,i] = np.clip(signal.convolve2d(img[...,i], filtro_agucamento, mode='same', boundary='symm'), 0,1)
+        misc.imsave("img.jpg", img_com_filtro)
+    
+    def equalizaHist(self, img):
+        equ = cv2.equalizeHist(img)
+        return equ
+
+    def equalizaHistAdaptativo(self, img):
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        cl1 = clahe.apply(img)
+        return cl1
+
+
+
+    # piora imagem
     def dilatacao(self, img, tipo_kernel):
         kernel = None
         if tipo_kernel == "rect":
@@ -36,6 +58,20 @@ class Preprocessamentos:
     def abertura(self, img):
         selem = disk(6)
         return opening(img, selem)
+
+
+    def getHistogram(imgIn):
+        nValues = 10
+        nBins = 10
+        bRange = nValues/nBins
+        axis=1
+        hist = np.zeros((axis, nBins))
+        for row in range(0, len(imgIn)):	
+            for col in range(0, len(imgIn[row])):
+                index = int(imgIn[row,col]/bRange)
+                hist[0][index] = hist[0][index] + 1
+        return hist
+
 
     # fechamento: dilatacao + erosao
     def fechamento(self, img):
@@ -66,28 +102,5 @@ class Preprocessamentos:
     
 if __name__ == "__main__":
     pp = Preprocessamentos()
-    img = cv2.imread("imagens/chair/000147.jpg", 0)
-    cv2.imshow("Original", img)
-    '''
-    img_dilatada = pp.dilatacao(img, "cross")
-    cv2.imshow("Dilatacao", img_dilatada)
-    cv2.imwrite("dilatacao.jpg", img_dilatada)
-
-
-    img_eroded = pp.erosao(img) 
-    cv2.imshow("Erosao", img_eroded)
-    cv2.imwrite("erosao.jpg", img_eroded)
-
+    pp.agucamentoBordas("imagens/chair_/000005_5.jpg")
     
-    img_opened = pp.abertura(img)
-    cv2.imshow("Abertura", img_opened)
-    cv2.imwrite("abertura.jpg", img_opened)
-    
-    img_closed = pp.fechamento(img)
-    cv2.imshow("Fechamento", img_closed)
-    cv2.imwrite("fechamento.jpg", img_closed)
-    cv2.waitKey(0)
-    '''
-    cv2.imshow("kjb", pp.deteccaoBordas(img))
-    cv2.waitKey(0)
-    cv2.imwrite("k.jpg", pp.deteccaoBordas(img))
