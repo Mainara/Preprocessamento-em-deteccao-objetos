@@ -47,10 +47,11 @@ class DetectorObjetos:
         caminho_imagens = args["imagens"]
         imagens = os.listdir(caminho_imagens)
         for img in imagens:
+            print img
             imagem = cv2.imread(caminho_imagens +img)
             lista = (caminho_imagens+img).split("/")
-            tipo_objeto = lista[1][0:len(lista[1])-1]
-            self.y_true.append(int(lista[2].split("_")[1][0]))
+            tipo_objeto = lista[-2][0:len(lista[-2])-1]
+            self.y_true.append(int(lista[-1].split("_")[1][0]))
             (h, w) = imagem.shape[:2]
             blob = cv2.dnn.blobFromImage(cv2.resize(imagem, (300, 300)), 0.007843, (300, 300), 127.5)
             self.getDeteccoes(net, blob, w, h, imagem)
