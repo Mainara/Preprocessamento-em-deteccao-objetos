@@ -1,6 +1,6 @@
 # Detecção de Objetos com diferentes pré-processamentos
 
-Para isntalar as dependências do projeto e executá-lo, utilize os seguintes comandos:
+Para instalar as dependências do projeto e executá-lo, utilize os seguintes comandos:
 
 ```sh
 # aqui ja ira instalar as dependencias do arquivo requirements.txt
