@@ -4,7 +4,6 @@ import numpy as np
 import os
 from skimage.morphology import erosion, dilation, opening, closing, white_tophat
 from skimage.morphology import disk
-from scipy import ndimage, misc, signal
 from skimage.morphology import watershed
 from skimage.feature import peak_local_max
 from skimage import morphology

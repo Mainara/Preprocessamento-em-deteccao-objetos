@@ -36,7 +36,6 @@ class DetectorObjetos:
         args = vars(argp.parse_args())
 
     # carraga o arquivo do modelo
-
     def carregaModelo(self):
         global args
         print("[INFO] carregando modelo...")
@@ -63,7 +62,6 @@ class DetectorObjetos:
             self.getDeteccoes(net, blob, w, h, imagem)
 
     # passa o blob pela redes neurais e obtem as deteccoes e predicoes
-
     def getDeteccoes(self, net, blob, w, h, imagem):
         print("[INFO] calculando as deteccoes...")
         net.setInput(blob)
@@ -71,7 +69,6 @@ class DetectorObjetos:
         self.loopSobreDeteccoes(deteccoes, imagem, w, h)
 
     # loop sobre as detccoes
-
     def loopSobreDeteccoes(self, deteccoes, imagem, w, h):
 
         # inicializa os labels que o MobileNet SSD foi treinado para
